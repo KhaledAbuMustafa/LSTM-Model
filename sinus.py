@@ -36,7 +36,7 @@ def sine():
     X = np.linspace(start=0, stop=n * np.pi,num=n_100)
 
     y = []
-    # Creating sine waves with different amplitudes and frequencies
+    # Sine waves with different amplitudes and frequencies
     y.append(ampl() * np.sin(X[:100] * freq()) ** 4)
     if n < 2:
         y.append(ampl() * np.sin(X[100:n_100] * freq()) ** 4)
@@ -83,7 +83,7 @@ def sine2():
     y = np.concatenate(array_list)
     y = np.array([x*np.random.normal(1,0.05) for x in y])
 
-    # Add baseline
+    # add baseline
     slope = np.random.uniform(low=-0.01, high=0.01)
     intercept = np.random.uniform(low=-0.5, high=0.5)
     baseline = slope * X + intercept
@@ -112,7 +112,7 @@ def df_to_X_y(X,y, window_size=75):
     return np.array(X_new), np.array(y_new)
 
 
-# Set data split
+# set data split
 def datasets(X,y):
     X_new, y_new = df_to_X_y(X, y)
     global q_70, q_80
