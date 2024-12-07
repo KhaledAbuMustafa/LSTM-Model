@@ -15,6 +15,7 @@ import time
 
 
 class ModelGenerator:
+        # Load and evaluate offline model
         def load_model(self, X_train, y_train, X_val, y_val, X, X_test, y_test,y):
                 ws = 32
                 data_prep = Data_prep()
@@ -27,6 +28,7 @@ class ModelGenerator:
                 early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
 
                 start_time = time.time()
+                # In case of retraining
                 #loaded_model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=30, callbacks=[early_stopping])
 
                 train_pred = loaded_model.predict(X_train)
@@ -36,7 +38,7 @@ class ModelGenerator:
                 prediction_time = end_time - start_time
                 print(f"Prediction Time: {prediction_time}")
 
-                
+                # Visualization of predicitions
                 plt.figure(figsize=(14, 7))
                 plt.subplot(3, 1, 1)
                 plt.plot(X[:q_70], y_train[:, 0], label='True Value  (Train)')
@@ -81,18 +83,25 @@ class ModelGenerator:
                 global q_70, q_85
                 q_70 = int(0.7 * (len(X)-ws-data_prep.target_steps+1))
                 q_85 = int(0.85 * (len(X) - ws - data_prep.target_steps + 1))
+
+                # Split data into train, validation, and test sets
                 X_train, y_train, X_val, y_val, X_test, y_test = data_prep.datasets(X, y)
                 #model = self.build_model(X_train,y_train,X_val,y_val)
+
+                # Load the predictions 
                 train_pred, val_pred, test_pred = self.load_model(X_train, y_train, X_val, y_val, X, X_test,y_test,y)
 
+                # Calculate Mean Absolute Error for each dataset
                 mean_err_train = mean_absolute_error(y_train[:,0], train_pred[:,0])
                 mean_err_val = mean_absolute_error(y_val[:,0], val_pred[:,0])
                 mean_err_test = mean_absolute_error(y_test[:,0], test_pred[:,0])
 
+                # Compute absolute errors
                 abs_train_error_1 = np.abs(y_train[:, 0] - train_pred[:, 0])
                 abs_val_error_1 = np.abs(y_val[:, 0]- val_pred[:, 0])
                 abs_test_error_1 = np.abs(y_test[:, 0]- test_pred[:, 0])
 
+                # Visualize absolute errors
                 plt.figure(figsize=(14, 7))
                 plt.subplot(3, 1, 1)
                 plt.scatter(X[:q_70], abs_train_error_1, label='Absolute Error')
@@ -129,23 +138,24 @@ class ModelGenerator:
 
                 return mean_absolute_error(y_train, train_pred), mean_absolute_error(y_val, val_pred), mean_absolute_error(y_test,test_pred)
 
-
+        # Build and tune the model using Keras Tuner
         def build_model(self,X_train,y_train,X_val,y_val):
                 tuner = Tuner()
                 build_model = tuner.build_model
 
-                
+                # Define Keras Tuner configuration
                 tuner = kt.Hyperband(
                 build_model,
                 objective='val_loss',
                 max_epochs=130,  
                 factor=3,
                 directory='my_dir',
-                project_name='motion_prediction_weirdos_pls'
+                project_name='project_name'
                 )
 
                 early_stopping = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
-
+                
+                # Search for the best hyperparameters
                 tuner.search(X_train, y_train, validation_data=(X_val, y_val), epochs=130, callbacks=[early_stopping],
                         verbose=2)
 
