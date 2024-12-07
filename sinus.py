@@ -12,10 +12,11 @@ from sklearn.utils.multiclass import unique_labels
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Generate random amplitude between 0.8 and 1.2
 def ampl():
     return np.random.uniform(low=0.8, high=1.2)
 
-
+# Generate random frequency between 0.9 and 1.1
 def freq():
     return np.random.uniform(low=0.9, high=1.1)
 
@@ -25,11 +26,13 @@ def freq2(n):
 
     return initial_freq + freq_slope * n
 
+# Generate a random length
 def length():
     n= np.random.uniform(low=10.5, high=11.5)
     rounded_number = round(n * 10) / 10
     return rounded_number
 
+# Generate sine waves with different amplitudes and frequencies
 def sine():
     n = length()
     n_100 = int(n*100)
@@ -49,7 +52,7 @@ def sine():
 
     
     y = np.concatenate(array_list)
-    y = np.array([x*np.random.normal(1,0.05) for x in y]) # measurement noise
+    y = np.array([x*np.random.normal(1,0.05) for x in y]) # Measurement noise
     plt.plot(X, y)
     plt.xlabel('t')
     plt.ylabel('amplitude')
@@ -83,12 +86,12 @@ def sine2():
     y = np.concatenate(array_list)
     y = np.array([x*np.random.normal(1,0.05) for x in y])
 
-    # add baseline
+    # Add baseline
     slope = np.random.uniform(low=-0.01, high=0.01)
     intercept = np.random.uniform(low=-0.5, high=0.5)
     baseline = slope * X + intercept
 
-    # function with baseline
+    # Function with baseline
     y = y + baseline
 
     plt.plot(X, y)
@@ -101,7 +104,7 @@ def sine2():
 
 
 
-
+# Convert data into sequences for model input (sliding window approach)
 def df_to_X_y(X,y, window_size=75):
     X_new = []
     y_new = []
@@ -112,7 +115,7 @@ def df_to_X_y(X,y, window_size=75):
     return np.array(X_new), np.array(y_new)
 
 
-# set data split
+# Split dataset into training, validation, and test setst
 def datasets(X,y):
     X_new, y_new = df_to_X_y(X, y)
     global q_70, q_80
@@ -124,7 +127,7 @@ def datasets(X,y):
     
     return X_train, y_train, X_val, y_val, X_test, y_test
 
-
+# Build and train the model
 def model(X_train, y_train, X_val, y_val,X, X_test, y_test):
 
     model = tf.keras.Sequential([layers.Input((75,1)),
