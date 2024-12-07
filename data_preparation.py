@@ -5,6 +5,8 @@ import os
 class Data_prep:
 
     target_steps = 1
+
+    # Splits data into training, validation, and testing sets
     def datasets(self, X, y):
         X, y = self.df_to_X_y(X,y)
         q_70 = int(0.7 * len(X))
@@ -14,6 +16,7 @@ class Data_prep:
         X_test, y_test = X[q_85:], y[q_85:]
         return X_train, y_train, X_val, y_val, X_test, y_test
 
+     # Transforms data into input-output pairs using a sliding window
     def df_to_X_y(self, X,y):
         window_size = 32
         X_new = []
